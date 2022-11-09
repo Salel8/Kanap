@@ -144,7 +144,7 @@ boutonElement.addEventListener('click', ()=> {
 
   let cardStorage = JSON.parse(localStorage.getItem('card'));
 
-  if (cardStorage==undefined){
+  if (cardStorage==null || cardStorage==undefined || cardStorage==[]){
     card.push({id: nomUrl, couleur: couleurProduit, quantite: quantiteProduit});
 
     let objLineaNew = JSON.stringify(card);

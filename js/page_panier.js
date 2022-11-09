@@ -2,6 +2,8 @@
 let objLinea = localStorage.getItem('card');
 let card = JSON.parse(objLinea);
 
+let prixTotal = 0;
+
 for( let i = 0; i < card.length; i++){
     //nomCle = localStorage.key(i);
 
@@ -85,6 +87,15 @@ for( let i = 0; i < card.length; i++){
       const section = document.getElementById("cart__items");
       section.appendChild(article);
 
+      ///////
+      const total_quantite = document.getElementById("totalQuantity");
+      total_quantite.innerText = card.length;
+
+      const total_prix = document.getElementById("totalPrice");
+      prixTotal = prixTotal + produits.price;
+      total_prix.innerText = prixTotal;
+
+
       /*Pour modifier la quantite*/
       const select = document.getElementsByClassName("itemQuantity")[i];
       /*let result = document.querySelector('#result');*/
@@ -98,31 +109,56 @@ for( let i = 0; i < card.length; i++){
           localStorage.setItem('card',objLineaNew);
       });
 
+
       /*Pour supprimer*/
-      const selectDelete = document.getElementsByClassName("deleteItem")[i];
+      for( let j = 0; j < card.length; j++){
 
-      selectDelete.addEventListener('click', function () {
-          const r1 = selectDelete.closest('#cart__items');
-          const eltASupprimmer = document.getElementsByClassName("cart__item")[i];
-          r1.removeChild(eltASupprimmer);
+        const selectDelete = document.getElementsByClassName("deleteItem")[j];
 
-          let elementSupprimer = card.splice(i,1);
+        selectDelete.addEventListener('click', function () {
+            const r1 = selectDelete.closest('#cart__items');
+            const eltASupprimmer = document.getElementsByClassName("cart__item")[j];
+            r1.removeChild(eltASupprimmer);
 
-          localStorage.removeItem('card');
+            let elementSupprimer = card.splice(j,1);
 
-          let objLineaNew = JSON.stringify(card);
-          localStorage.setItem('card',objLineaNew);
 
-      });
+
+            if (card.length===0){
+              localStorage.removeItem('card');
+            }
+            else{
+              localStorage.removeItem('card');
+
+              let objLineaNew = JSON.stringify(card);
+              localStorage.setItem('card',objLineaNew);
+            };
+
+          });
+
+
+
+      };
 
 
     });
 
 
+};
+
+/*for (let i = 0; i< card.length; i++){
 
 
 
-}
+
+};*/
+
+
+
+
+/*if (card===[]){
+  localStorage.removeItem('card');
+};*/
 
 
 /*on recupere les infos du formulaire*/
