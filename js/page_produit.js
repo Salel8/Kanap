@@ -149,6 +149,8 @@ boutonElement.addEventListener('click', ()=> {
 
     let objLineaNew = JSON.stringify(card);
     localStorage.setItem("card",objLineaNew);
+
+    window. alert("Article ajouté au Panier");
   }
   else{
     //// pour verifier qu'il n'y a pas de doublon
@@ -173,6 +175,7 @@ boutonElement.addEventListener('click', ()=> {
         //then.numeroTableau = i;
 
         //return doublon, numeroTableau;
+        window. alert("Article ajouté au Panier");
       }
       else{
         a = a+1;
@@ -183,6 +186,8 @@ boutonElement.addEventListener('click', ()=> {
 
           let objLineaNew = JSON.stringify(card);
           localStorage.setItem("card",objLineaNew);
+
+          window. alert("Article ajouté au Panier");
         }
       }
 
