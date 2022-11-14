@@ -38,13 +38,3 @@ const reponse = fetch("http://localhost:3000/api/products").then((response)=> re
 
 
 });
-/*const produits = await reponse.json();*/
-
-/*on va créer des listes contenant uniquement ce que l'on veut*/
-/*const noms = produits.map(produit => produit.name);
-
-const images = produits.map(produit => produit.imageUrl);
-
-const descriptions = produits.map(produit => produit.description);
-
-const altTxts = produits.map(produit => produit.altTxt);*/

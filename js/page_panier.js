@@ -13,28 +13,24 @@ if (card==null || card==undefined){
 
   const total_prix = document.getElementById("totalPrice");
   total_prix.innerText = prixTotal;
-}
-else{
+} else{
   for( let i = 0; i < card.length; i++){
       //nomCle = localStorage.key(i);
 
-
-
       const reponse = fetch("http://localhost:3000/api/products/" + card[i].id).then((response)=> response.json()
-
-      ).then((produits)=>{
+      ).then((produit)=>{
 
         /*on crée nos éléments*/
         ///////
         const imageElement = document.createElement("img");
-        imageElement.src = produits.imageUrl;
-        imageElement.setAttribute("alt", produits.altTxt);
+        imageElement.src = produit.imageUrl;
+        imageElement.setAttribute("alt", produit.altTxt);
 
         const nomElement = document.createElement("h2");
-        nomElement.innerText = produits.name;
+        nomElement.innerText = produit.name;
 
         const prixElement = document.createElement("p");
-        prixElement.innerText = produits.price + " €";
+        prixElement.innerText = produit.price + " €";
 
         const couleurElement = document.createElement("p");
         couleurElement.innerText = card[i].couleur;
@@ -42,23 +38,58 @@ else{
         const quantiteElement = document.createElement("p");
         quantiteElement.innerText = card[i].quantite;
 
-        const inputElement = document.createElement("input");
-        inputElement.setAttribute("type", "number");
-        inputElement.classList.add("itemQuantity");
-        inputElement.setAttribute("name", "itemQuantity");
-        inputElement.setAttribute("min", "1");
-        inputElement.setAttribute("max", "100");
-        inputElement.setAttribute("value", card[i].quantite);
+        const inputQuantity = document.createElement("input");
+        inputQuantity.setAttribute("type", "number");
+        inputQuantity.classList.add("itemQuantity");
+        inputQuantity.setAttribute("name", "itemQuantity");
+        inputQuantity.setAttribute("min", "1");
+        inputQuantity.setAttribute("max", "100");
+        inputQuantity.setAttribute("value", card[i].quantite);
+
+        inputQuantity.addEventListener('change', (event)=> {
+          card[i].quantite = event.target.value;
+          inputQuantity.setAttribute("value", event.target.value);
+          inputQuantity.parentNode.querySelector('p').innerText = event.target.value;
+
+          localStorage.removeItem('card');
+
+          let objLineaNew = JSON.stringify(card);
+          localStorage.setItem('card',objLineaNew);
+        });
 
         const deleteElement = document.createElement("p");
         deleteElement.innerText = "Supprimer";
         deleteElement.classList.add("deleteItem");
+        deleteElement.addEventListener('click', function (event) {
+                let eltASupprimmer = event.target.closest('.cart__item');
+                let cartItems = eltASupprimmer.closest('#cart__items');
+
+                cartItems.removeChild(eltASupprimmer);
+                card.splice(i, 1);
+
+                if (card.length === 0) {
+                    localStorage.removeItem('card');
+
+                    prixTotal = 0;
+                    total_prix.innerText = prixTotal;
+                } else {
+                    localStorage.removeItem('card');
+
+                    let objLineaNew = JSON.stringify(card);
+                    localStorage.setItem('card', objLineaNew);
+                    for (let k = 0; k < card.length; k++) {
+                        nouveau_prix = nouveau_prix + parseInt(card[k].price) * parseInt(card[k].quantite);
+                        total_prix.innerText = nouveau_prix;
+                    }
+                }
+            });
+
 
         ////////
         const divElementContenuParametreQuantite = document.createElement("div");
         divElementContenuParametreQuantite.classList.add("cart__item__content__settings__quantity");
         divElementContenuParametreQuantite.appendChild(quantiteElement);
-        divElementContenuParametreQuantite.appendChild(inputElement);
+        divElementContenuParametreQuantite.appendChild(inputQuantity);
 
         const divElementContenuParametreSupprimer = document.createElement("div");
         divElementContenuParametreSupprimer.classList.add("cart__item__content__settings__delete");
@@ -100,97 +131,15 @@ else{
 
         ///////
         const total_quantite = document.getElementById("totalQuantity");
-        quantiteTotal = quantiteTotal + card[i].quantite;
-        total_quantite.innerText = card.length;
+        quantiteTotal = quantiteTotal + parseInt(card[i].quantite);
+        total_quantite.innerText = quantiteTotal;
 
         const total_prix = document.getElementById("totalPrice");
-        prixTotal = prixTotal + produits.price * card[i].quantite;
+        prixTotal = prixTotal + produit.price * card[i].quantite;
         total_prix.innerText = prixTotal;
-
-
-        /*Pour modifier la quantite*/
-        const select = document.getElementsByClassName("itemQuantity")[i];
-        /*let result = document.querySelector('#result');*/
-        select.addEventListener('change', (event)=> {
-            card[i].quantite = event.target.value;
-            inputElement.setAttribute("value", event.target.value);
-
-            localStorage.removeItem('card');
-
-            let objLineaNew = JSON.stringify(card);
-            localStorage.setItem('card',objLineaNew);
-
-            /*total_quantite.innerText = card.length;*/
-        });
-
-
-        /*Pour supprimer*/
-        /*for( let j = 0; j < card.length; j++){*/
-
-          let selectDelete = document.getElementsByClassName("deleteItem")[i-a];
-
-          selectDelete.addEventListener('click', function () {
-              let r1 = selectDelete.closest('#cart__items');
-              let eltASupprimmer = document.getElementsByClassName("cart__item")[i-a];
-              if (eltASupprimmer!=null){
-                r1.removeChild(eltASupprimmer);
-
-                /*let elementSupprimer = card.splice(i,1);*/
-                /*let nouveau_tableau = card.splice(j,1);*/
-                card.splice(i-a,1);
-                /*eltASupprimmer.splice(i,1);*/
-                /*selectDelete.splice(i,1);*/
-
-                a=a+1;
-
-                if (card.length===0){
-                  localStorage.removeItem('card');
-
-                  prixTotal = 0;
-                  total_prix.innerText = prixTotal;
-                }
-                else{
-                  localStorage.removeItem('card');
-
-                  let objLineaNew = JSON.stringify(card);
-                  localStorage.setItem('card',objLineaNew);
-                  for (let k=0; k<card.length; k++){
-                    nouveau_prix = nouveau_prix + parseInt(card[k].price) * parseInt(card[k].quantite);
-                    total_prix.innerText = nouveau_prix;
-                  }
-                };
-              }
-              /*window.location.reload();*/
-
-            });
-
-
-
-        /*};*/
-
-
       });
-
-
   };
 }
-
-
-
-/*for (let i = 0; i< card.length; i++){
-
-
-
-
-};*/
-
-
-
-
-/*if (card===[]){
-  localStorage.removeItem('card');
-};*/
-
 
 /*on recupere les infos du formulaire*/
 const selectFirstName = document.querySelector('#firstName');
@@ -199,9 +148,11 @@ const selectAdress = document.querySelector('#address');
 const selectCity = document.querySelector('#city');
 const selectEmail = document.querySelector('#email');
 
-const masque1 = /[^a-zA-Z]/;    // tout sauf des lettres espace et tiret milieu
-const masque2 = /[^a-zA-Z0-9]/;   // tout sauf lettres chiffres espace et tiret milieu
-const masque3 = /[@.]/;   // il doit y avoir un @ et un point
+const masque1 = /[^a-zA-Z-\t]/;    // tout sauf des lettres espace et tiret milieu
+const masque2 = /[^a-zA-Z0-9-\t]/;   // tout sauf lettres chiffres espace et tiret milieu
+const masque3 = /[@]/;   // il doit y avoir un @
+const masque4 = /[.]/;   // il doit y avoir un point
+const masque5 = /[a-zA-Z0-9]/;    // il doit y avoir une lettre ou un chiffre
 
 //let firstName="";
 //let lastName="";
@@ -220,7 +171,7 @@ const masque3 = /[@.]/;   // il doit y avoir un @ et un point
 let contact = {
   firstName : "",
   lastName : "",
-  adress : "",
+  address : "",
   city : "",
   email : ""
 };
@@ -245,7 +196,7 @@ selectFirstName.addEventListener('change', function (event) {
 
 selectLastName.addEventListener('change', function (event) {
     contact.lastName = event.target.value;
-    let caseLastNameRemplie = 0;
+    //let caseLastNameRemplie = 0;
     if (masque1.test(contact.lastName)){
       const lastNameError = document.querySelector('#lastNameErrorMsg');
       lastNameError.innerText = "Veuillez écrire votre Nom seulement avec des lettres";
@@ -260,9 +211,9 @@ selectLastName.addEventListener('change', function (event) {
 });
 
 selectAdress.addEventListener('change', function (event) {
-    contact.adress = event.target.value;
-    let caseAdressRemplie = 0;
-    if (masque2.test(contact.adress)){
+    contact.address = event.target.value;
+    //let caseAdressRemplie = 0;
+    if (masque2.test(contact.address)){
       const adressError = document.querySelector('#addressErrorMsg');
       adressError.innerText = "Erreur, pas de caractère spécial";
 
@@ -278,7 +229,7 @@ selectAdress.addEventListener('change', function (event) {
 
 selectCity.addEventListener('change', function (event) {
     contact.city = event.target.value;
-    let caseCityRemplie = 0;
+    //let caseCityRemplie = 0;
     if (masque1.test(contact.city)){
       const cityError = document.querySelector('#cityErrorMsg');
       cityError.innerText = "Erreur, pas de caractère spécial";
@@ -295,8 +246,8 @@ selectCity.addEventListener('change', function (event) {
 
 selectEmail.addEventListener('change', function (event) {
     contact.email = event.target.value;
-    let caseMailRemplie = 0;
-    if (masque3.test(contact.email)){
+    //let caseMailRemplie = 0;
+    if (masque3.test(contact.email) && masque4.test(contact.email) && masque5.test(contact.email)){
       const mailError = document.querySelector('#emailErrorMsg');
       mailError.innerText = "";
       caseMailRemplie = 1;
@@ -311,14 +262,44 @@ selectEmail.addEventListener('change', function (event) {
 
 ////Recuperer le numero de commande
 
-/*const numero_commande = fetch("http://localhost:3000/api/order", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: contact, card//JSON.stringify(contact), JSON.stringify(card)
-}).then((response)=>response.json()).then((produits)=>{
+/*let selectOrder = document.getElementById("order");
 
-  const lien = document.getElementById("order");
-  lien.setAttribute("href", "./confirmation.html?id=" + produits);
+if (contact.firstName!=null && contact.lastName!=null && contact.adress!=null && contact.city!=null && contact.email!=null){
+  selectOrder.addEventListener('click', function (event) {
+
+    event.preventDefault();
+
+    const numero_commande = fetch("http://localhost:3000/api/products/order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json;charset=utf-8"
+        },
+        body: JSON.stringify(contact) && JSON.stringify(card)
+
+    }).then((response)=>response.json()).then((produits)=>{
+
+      const lien = document.getElementById("order");
+      lien.setAttribute("href", "./confirmation.html?id=" + produits.orderId);
+      console.log(produits);
+      window.location =
 
 
-});*/
+    });
+
+  });
+}*/
+
+document.querySelector('#order').addEventListener('click', function(event){
+    event.preventDefault();
+    const myHeaders = new Headers();
+    myHeaders.append('Content-Type', 'application/json')
+    const products = card.map((product) => product.id);
+    var myInit = {
+        method: 'POST',
+        headers: myHeaders,
+        body: JSON.stringify({contact, products})
+    };
+    fetch('http://localhost:3000/api/products/order', myInit ).then((response) => response.json()).then(data => {
+        window.location.replace("./confirmation.html?id=" + data.orderId);
+    })
+})
