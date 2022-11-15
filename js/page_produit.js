@@ -115,120 +115,61 @@ selectElementFor.addEventListener('change', (event) => {
 const card=[];
 /*on utilise le localStorage pour stocker la matrice*/
 boutonElement = document.getElementById("addToCart");
-/*boutonElement.addEventListener('click', function() {*/
-//if (quantiteProduit!=0 && couleurProduit!='a'){
   boutonElement.addEventListener('click', ()=> {
+    if (quantiteProduit!=0 && couleurProduit!=''){
+      /*on vérifie qu'il n'y a pas de doublon dans le localStorage*/
+      /////////
+      //// si cardStorage existe pas
 
-    /*on vérifie qu'il n'y a pas de doublon dans le localStorage*/
-    /*let keys=[];
-    for( let i = 0; i < localStorage.length; i++){
-        keys[i] = localStorage.key(i);
-        if (keys[i] = commandeJson.id + commandeJson.couleur){
-          let memeValeur=true;
+      let cardStorage = JSON.parse(localStorage.getItem('card'));
 
-          let objLinea = localStorage.getItem(nomUrl+couleurProduit);
-          let objJson = JSON.parse(objLinea);
-          commandeJson.quantite = commandeJson.quantite + objJson.quantite;
+      if (cardStorage==null || cardStorage==undefined || cardStorage==[]){
+        card.push({id: nomUrl, couleur: couleurProduit, quantite: quantiteProduit});
 
-          localStorage.removeItem(nomUrl+couleurProduit);
+        let objLineaNew = JSON.stringify(card);
+        localStorage.setItem("card",objLineaNew);
 
-          let objLineaNew = JSON.stringify(commandeJson);
-          localStorage.setItem(nomUrl+couleurProduit,objLineaNew);
+        window.alert("Article ajouté au Panier");
+      }
+      else{
+        //// pour verifier qu'il n'y a pas de doublon
 
-        }
-        else{
-          let memeValeur=false;
+        let a=0;
 
-          let objLineaNew = JSON.stringify(commandeJson);
-          localStorage.setItem(nomUrl+couleurProduit,objLineaNew);
-
-        }
-    }*/
-    /////////
-    //// si cardStorage existe pas
-
-    let cardStorage = JSON.parse(localStorage.getItem('card'));
-
-    if (cardStorage==null || cardStorage==undefined || cardStorage==[]){
-      card.push({id: nomUrl, couleur: couleurProduit, quantite: quantiteProduit});
-
-      let objLineaNew = JSON.stringify(card);
-      localStorage.setItem("card",objLineaNew);
-
-      window. alert("Article ajouté au Panier");
-    }
-    else{
-      //// pour verifier qu'il n'y a pas de doublon
-
-
-      //let objLinea = localStorage.getItem(nomUrl+couleurProduit);
-      //let objJson = JSON.parse(objLinea);
-
-      //let numeroDoublon = 0;
-      let a=0;
-
-      for (let i in cardStorage){
-        card[i] = cardStorage[i];
-        if (cardStorage[i].id == nomUrl && cardStorage[i].couleur == couleurProduit){
-          card[i].quantite = card[i].quantite + quantiteProduit;
-
-          localStorage.removeItem('card');
-
-          let objLineaNew = JSON.stringify(card);
-          localStorage.setItem("card",objLineaNew);
-          this.numeroDoublon = 1;
-          //then.numeroTableau = i;
-
-          //return doublon, numeroTableau;
-          window. alert("Article ajouté au Panier");
-        }
-        else{
-          a = a+1;
-          if (a==cardStorage.length){
-            card.push({id: nomUrl, couleur: couleurProduit, quantite: quantiteProduit});
+        for (let i in cardStorage){
+          card[i] = cardStorage[i];
+          if (cardStorage[i].id == nomUrl && cardStorage[i].couleur == couleurProduit){
+            card[i].quantite = card[i].quantite + quantiteProduit;
 
             localStorage.removeItem('card');
 
             let objLineaNew = JSON.stringify(card);
             localStorage.setItem("card",objLineaNew);
+            this.numeroDoublon = 1;
 
-            window. alert("Article ajouté au Panier");
+            window.alert("Article ajouté au Panier");
+          }
+          else{
+            a = a+1;
+            if (a==cardStorage.length){
+              card.push({id: nomUrl, couleur: couleurProduit, quantite: quantiteProduit});
+
+              localStorage.removeItem('card');
+
+              let objLineaNew = JSON.stringify(card);
+              localStorage.setItem("card",objLineaNew);
+
+              window.alert("Article ajouté au Panier");
+            }
           }
         }
 
-        //return numeroDoublon, numeroTableau;
       }
-
-
-      /*if (numeroDoublon==0){
-        //// s'il n'y a pas de doublon
-
-
-      }*/
-      /*else{
-        //// s'il y a un doublon
-        //card = cardStorage;
-
-        //card[numeroTableau].quantite = card[numeroTableau].quantite + quantiteProduit;
-
-        //localStorage.removeItem('card');
-
-        //let objLineaNew = JSON.stringify(card);
-        //localStorage.setItem("card",objLineaNew);
-      }*/
     }
-
-    //console.log(card);
-
-    //card.push({id: nomUrl, couleur: couleurProduit, quantite: quantiteProduit});
-
-    //let objLineaNew = JSON.stringify(card);
-    //localStorage.setItem("card",objLineaNew);
-
-
+    else{
+      window.alert("Veuillez sélectionner la couleur du produit et sa quantité");
+    }
 
 
 
   });
-
-//}

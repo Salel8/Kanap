@@ -55,6 +55,12 @@ if (card==null || card==undefined){
 
           let objLineaNew = JSON.stringify(card);
           localStorage.setItem('card',objLineaNew);
+
+          /*nouveau_prix = nouveau_prix + parseInt(card[i].price) * parseInt(card[i].quantite);
+          total_prix.innerText = nouveau_prix;
+          quantiteTotal = quantiteTotal + parseInt(card[i].quantite);
+          total_quantite.innerText = quantiteTotal;*/
+
         });
 
         const deleteElement = document.createElement("p");
@@ -178,83 +184,93 @@ let contact = {
 
 
 selectFirstName.addEventListener('change', function (event) {
-    contact.firstName = event.target.value;
+    //contact.firstName = event.target.value;
     //let caseFirstNameRemplie = 0;
-    if (masque1.test(contact.firstName)){
+    if (masque1.test(event.target.value)){
       const firstNameError = document.querySelector('#firstNameErrorMsg');
       firstNameError.innerText = "Veuillez écrire votre Prénom seulement avec des lettres";
+      contact.firstName = "";
 
     }
     else{
       const firstNameError = document.querySelector('#firstNameErrorMsg');
       firstNameError.innerText = "";
-      caseFirstNameRemplie = 1;
+      contact.firstName = event.target.value;
+      //caseFirstNameRemplie = 1;
     }
 
 });
 
 
 selectLastName.addEventListener('change', function (event) {
-    contact.lastName = event.target.value;
+    //contact.lastName = event.target.value;
     //let caseLastNameRemplie = 0;
-    if (masque1.test(contact.lastName)){
+    if (masque1.test(event.target.value)){
       const lastNameError = document.querySelector('#lastNameErrorMsg');
       lastNameError.innerText = "Veuillez écrire votre Nom seulement avec des lettres";
+      contact.lastName = "";
 
     }
     else{
       const lastNameError = document.querySelector('#lastNameErrorMsg');
       lastNameError.innerText = "";
-      caseLastNameRemplie = 1;
+      contact.lastName = event.target.value;
+      //caseLastNameRemplie = 1;
     }
 
 });
 
 selectAdress.addEventListener('change', function (event) {
-    contact.address = event.target.value;
+    //contact.address = event.target.value;
     //let caseAdressRemplie = 0;
-    if (masque2.test(contact.address)){
+    if (masque2.test(event.target.value)){
       const adressError = document.querySelector('#addressErrorMsg');
       adressError.innerText = "Erreur, pas de caractère spécial";
+      contact.address = "";
 
     }
     else{
       const adressError = document.querySelector('#addressErrorMsg');
       adressError.innerText = "";
-      caseAdressRemplie = 1;
+      contact.address = event.target.value;
+      //caseAdressRemplie = 1;
     }
 
 });
 
 
 selectCity.addEventListener('change', function (event) {
-    contact.city = event.target.value;
+    //contact.city = event.target.value;
     //let caseCityRemplie = 0;
-    if (masque1.test(contact.city)){
+    if (masque1.test(event.target.value)){
       const cityError = document.querySelector('#cityErrorMsg');
       cityError.innerText = "Erreur, pas de caractère spécial";
+      contact.city = "";
 
     }
     else{
       const cityError = document.querySelector('#cityErrorMsg');
       cityError.innerText = "";
-      caseCityRemplie = 1;
+      contact.city = event.target.value;
+      //caseCityRemplie = 1;
     }
 
 });
 
 
 selectEmail.addEventListener('change', function (event) {
-    contact.email = event.target.value;
+    //contact.email = event.target.value;
     //let caseMailRemplie = 0;
-    if (masque3.test(contact.email) && masque4.test(contact.email) && masque5.test(contact.email)){
+    if (masque3.test(event.target.value) && masque4.test(event.target.value) && masque5.test(event.target.value)){
       const mailError = document.querySelector('#emailErrorMsg');
       mailError.innerText = "";
-      caseMailRemplie = 1;
+      contact.email = event.target.value;
+      //caseMailRemplie = 1;
     }
     else{
       const mailError = document.querySelector('#emailErrorMsg');
       mailError.innerText = "Erreur, pas de caractère spécial";
+      contact.email = "";
     }
 
 });
@@ -262,44 +278,23 @@ selectEmail.addEventListener('change', function (event) {
 
 ////Recuperer le numero de commande
 
-/*let selectOrder = document.getElementById("order");
-
-if (contact.firstName!=null && contact.lastName!=null && contact.adress!=null && contact.city!=null && contact.email!=null){
-  selectOrder.addEventListener('click', function (event) {
-
-    event.preventDefault();
-
-    const numero_commande = fetch("http://localhost:3000/api/products/order", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json;charset=utf-8"
-        },
-        body: JSON.stringify(contact) && JSON.stringify(card)
-
-    }).then((response)=>response.json()).then((produits)=>{
-
-      const lien = document.getElementById("order");
-      lien.setAttribute("href", "./confirmation.html?id=" + produits.orderId);
-      console.log(produits);
-      window.location =
-
-
-    });
-
-  });
-}*/
-
 document.querySelector('#order').addEventListener('click', function(event){
     event.preventDefault();
     const myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json')
-    const products = card.map((product) => product.id);
-    var myInit = {
-        method: 'POST',
-        headers: myHeaders,
-        body: JSON.stringify({contact, products})
-    };
-    fetch('http://localhost:3000/api/products/order', myInit ).then((response) => response.json()).then(data => {
-        window.location.replace("./confirmation.html?id=" + data.orderId);
-    })
+    if (contact.firstName!='' && contact.lastName!='' && contact.address!='' && contact.city!='' && contact.email!='' && card!=null && card.length!=0){
+      const products = card.map((product) => product.id);
+      var myInit = {
+          method: 'POST',
+          headers: myHeaders,
+          body: JSON.stringify({contact, products})
+      };
+      fetch('http://localhost:3000/api/products/order', myInit ).then((response) => response.json()).then(data => {
+          window.location.replace("./confirmation.html?id=" + data.orderId);
+      })
+    }
+    else{
+      window.alert("Veillez à ce que le panier ne soit pas vide et à remplir le formulaire entièrement !");
+    }
+
 })
