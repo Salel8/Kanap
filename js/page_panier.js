@@ -47,6 +47,9 @@ if (card==null || card==undefined){
         inputQuantity.setAttribute("value", card[i].quantite);
 
         inputQuantity.addEventListener('change', (event)=> {
+          differenceArticle = event.target.value - card[i].quantite;
+          differencePrix = differenceArticle * produit.price;
+
           card[i].quantite = event.target.value;
           inputQuantity.setAttribute("value", event.target.value);
           inputQuantity.parentNode.querySelector('p').innerText = event.target.value;
@@ -56,10 +59,12 @@ if (card==null || card==undefined){
           let objLineaNew = JSON.stringify(card);
           localStorage.setItem('card',objLineaNew);
 
-          /*nouveau_prix = nouveau_prix + parseInt(card[i].price) * parseInt(card[i].quantite);
-          total_prix.innerText = nouveau_prix;
-          quantiteTotal = quantiteTotal + parseInt(card[i].quantite);
-          total_quantite.innerText = quantiteTotal;*/
+          prixTotal = prixTotal + differencePrix;
+          total_prix.innerText = prixTotal;
+
+          quantiteTotal = quantiteTotal + differenceArticle;
+          total_quantite.innerText = quantiteTotal;
+
 
         });
 
@@ -67,27 +72,32 @@ if (card==null || card==undefined){
         deleteElement.innerText = "Supprimer";
         deleteElement.classList.add("deleteItem");
         deleteElement.addEventListener('click', function (event) {
+                differenceArticle = parseInt(card[i].quantite);
+                differencePrix = differenceArticle * produit.price;
                 let eltASupprimmer = event.target.closest('.cart__item');
                 let cartItems = eltASupprimmer.closest('#cart__items');
 
                 cartItems.removeChild(eltASupprimmer);
-                card.splice(i, 1);
+                let elementQuonSupprime = card.splice(i, 1);
 
                 if (card.length === 0) {
                     localStorage.removeItem('card');
 
-                    prixTotal = 0;
+                    /*prixTotal = 0;
                     total_prix.innerText = prixTotal;
+                    quantiteTotal = 0;
+                    total_quantite.innerText = quantiteTotal;*/
                 } else {
                     localStorage.removeItem('card');
 
                     let objLineaNew = JSON.stringify(card);
                     localStorage.setItem('card', objLineaNew);
-                    for (let k = 0; k < card.length; k++) {
-                        nouveau_prix = nouveau_prix + parseInt(card[k].price) * parseInt(card[k].quantite);
-                        total_prix.innerText = nouveau_prix;
-                    }
                 }
+                prixTotal = prixTotal - differencePrix;
+                total_prix.innerText = prixTotal;
+
+                quantiteTotal = quantiteTotal - differenceArticle;
+                total_quantite.innerText = quantiteTotal;
             });
 
 
@@ -154,11 +164,11 @@ const selectAdress = document.querySelector('#address');
 const selectCity = document.querySelector('#city');
 const selectEmail = document.querySelector('#email');
 
-const masque1 = /[^a-zA-Z-\t]/;    // tout sauf des lettres espace et tiret milieu
-const masque2 = /[^a-zA-Z0-9-\t]/;   // tout sauf lettres chiffres espace et tiret milieu
+const masque1 = /[^A-Za-zÀ-ÿ- ]/;    // tout sauf des lettres espace et tiret milieu
+const masque2 = /[^a-zA-ZÀ-ÿ0-9- ]/;   // tout sauf lettres chiffres espace et tiret milieu
 const masque3 = /[@]/;   // il doit y avoir un @
 const masque4 = /[.]/;   // il doit y avoir un point
-const masque5 = /[a-zA-Z0-9]/;    // il doit y avoir une lettre ou un chiffre
+const masque5 = /[a-zA-ZÀ-ÿ0-9-_]/;    // il doit y avoir une lettre ou un chiffre
 
 //let firstName="";
 //let lastName="";
@@ -188,7 +198,7 @@ selectFirstName.addEventListener('change', function (event) {
     //let caseFirstNameRemplie = 0;
     if (masque1.test(event.target.value)){
       const firstNameError = document.querySelector('#firstNameErrorMsg');
-      firstNameError.innerText = "Veuillez écrire votre Prénom seulement avec des lettres";
+      firstNameError.innerText = "Veuillez écrire votre Prénom (chiffres et caractères spéciaux interdits)";
       contact.firstName = "";
 
     }
@@ -207,7 +217,7 @@ selectLastName.addEventListener('change', function (event) {
     //let caseLastNameRemplie = 0;
     if (masque1.test(event.target.value)){
       const lastNameError = document.querySelector('#lastNameErrorMsg');
-      lastNameError.innerText = "Veuillez écrire votre Nom seulement avec des lettres";
+      lastNameError.innerText = "Veuillez écrire votre Nom (chiffres et caractères spéciaux interdits)";
       contact.lastName = "";
 
     }
@@ -225,7 +235,7 @@ selectAdress.addEventListener('change', function (event) {
     //let caseAdressRemplie = 0;
     if (masque2.test(event.target.value)){
       const adressError = document.querySelector('#addressErrorMsg');
-      adressError.innerText = "Erreur, pas de caractère spécial";
+      adressError.innerText = "Veuillez écrire votre adresse (caractère spéciaux interdits)";
       contact.address = "";
 
     }
@@ -244,7 +254,7 @@ selectCity.addEventListener('change', function (event) {
     //let caseCityRemplie = 0;
     if (masque1.test(event.target.value)){
       const cityError = document.querySelector('#cityErrorMsg');
-      cityError.innerText = "Erreur, pas de caractère spécial";
+      cityError.innerText = "Veuillez indiquer votre ville (chiffres et caractères spéciaux interdits)";
       contact.city = "";
 
     }
@@ -269,7 +279,7 @@ selectEmail.addEventListener('change', function (event) {
     }
     else{
       const mailError = document.querySelector('#emailErrorMsg');
-      mailError.innerText = "Erreur, pas de caractère spécial";
+      mailError.innerText = "Veuillez indiquer une adresse mail valide";
       contact.email = "";
     }
 
