@@ -15,38 +15,36 @@ if (card==null || card==undefined){
   total_prix.innerText = prixTotal;
 } else{
   for( let i = 0; i < card.length; i++){
-      //nomCle = localStorage.key(i);
+    const reponse = fetch("http://localhost:3000/api/products/" + card[i].id).then((response)=> response.json()
+    ).then((produit)=>{
+      /*on crée nos éléments*/
+      ///////
+      const imageElement = document.createElement("img");
+      imageElement.src = produit.imageUrl;
+      imageElement.setAttribute("alt", produit.altTxt);
 
-      const reponse = fetch("http://localhost:3000/api/products/" + card[i].id).then((response)=> response.json()
-      ).then((produit)=>{
+      const nomElement = document.createElement("h2");
+      nomElement.innerText = produit.name;
 
-        /*on crée nos éléments*/
-        ///////
-        const imageElement = document.createElement("img");
-        imageElement.src = produit.imageUrl;
-        imageElement.setAttribute("alt", produit.altTxt);
+      const prixElement = document.createElement("p");
+      prixElement.innerText = produit.price + " €";
 
-        const nomElement = document.createElement("h2");
-        nomElement.innerText = produit.name;
+      const couleurElement = document.createElement("p");
+      couleurElement.innerText = card[i].couleur;
 
-        const prixElement = document.createElement("p");
-        prixElement.innerText = produit.price + " €";
+      const quantiteElement = document.createElement("p");
+      quantiteElement.innerText = card[i].quantite;
 
-        const couleurElement = document.createElement("p");
-        couleurElement.innerText = card[i].couleur;
+      const inputQuantity = document.createElement("input");
+      inputQuantity.setAttribute("type", "number");
+      inputQuantity.classList.add("itemQuantity");
+      inputQuantity.setAttribute("name", "itemQuantity");
+      inputQuantity.setAttribute("min", "1");
+      inputQuantity.setAttribute("max", "100");
+      inputQuantity.setAttribute("value", card[i].quantite);
 
-        const quantiteElement = document.createElement("p");
-        quantiteElement.innerText = card[i].quantite;
-
-        const inputQuantity = document.createElement("input");
-        inputQuantity.setAttribute("type", "number");
-        inputQuantity.classList.add("itemQuantity");
-        inputQuantity.setAttribute("name", "itemQuantity");
-        inputQuantity.setAttribute("min", "1");
-        inputQuantity.setAttribute("max", "100");
-        inputQuantity.setAttribute("value", card[i].quantite);
-
-        inputQuantity.addEventListener('change', (event)=> {
+      inputQuantity.addEventListener('change', (event)=> {
+        if (event.target.value<=100 && event.target.value>0){
           differenceArticle = event.target.value - card[i].quantite;
           differencePrix = differenceArticle * produit.price;
 
@@ -64,96 +62,97 @@ if (card==null || card==undefined){
 
           quantiteTotal = quantiteTotal + differenceArticle;
           total_quantite.innerText = quantiteTotal;
-
-
-        });
-
-        const deleteElement = document.createElement("p");
-        deleteElement.innerText = "Supprimer";
-        deleteElement.classList.add("deleteItem");
-        deleteElement.addEventListener('click', function (event) {
-                differenceArticle = parseInt(card[i].quantite);
-                differencePrix = differenceArticle * produit.price;
-                let eltASupprimmer = event.target.closest('.cart__item');
-                let cartItems = eltASupprimmer.closest('#cart__items');
-
-                cartItems.removeChild(eltASupprimmer);
-                let elementQuonSupprime = card.splice(i, 1);
-
-                if (card.length === 0) {
-                    localStorage.removeItem('card');
-
-                    /*prixTotal = 0;
-                    total_prix.innerText = prixTotal;
-                    quantiteTotal = 0;
-                    total_quantite.innerText = quantiteTotal;*/
-                } else {
-                    localStorage.removeItem('card');
-
-                    let objLineaNew = JSON.stringify(card);
-                    localStorage.setItem('card', objLineaNew);
-                }
-                prixTotal = prixTotal - differencePrix;
-                total_prix.innerText = prixTotal;
-
-                quantiteTotal = quantiteTotal - differenceArticle;
-                total_quantite.innerText = quantiteTotal;
-            });
-
-
-        ////////
-        const divElementContenuParametreQuantite = document.createElement("div");
-        divElementContenuParametreQuantite.classList.add("cart__item__content__settings__quantity");
-        divElementContenuParametreQuantite.appendChild(quantiteElement);
-        divElementContenuParametreQuantite.appendChild(inputQuantity);
-
-        const divElementContenuParametreSupprimer = document.createElement("div");
-        divElementContenuParametreSupprimer.classList.add("cart__item__content__settings__delete");
-        divElementContenuParametreSupprimer.appendChild(deleteElement);
-
-        /////////
-        const divElementContenuDescription = document.createElement("div");
-        divElementContenuDescription.classList.add("cart__item__content__description");
-        divElementContenuDescription.appendChild(nomElement);
-        divElementContenuDescription.appendChild(couleurElement);
-        divElementContenuDescription.appendChild(prixElement);
-
-        const divElementContenuParametre = document.createElement("div");
-        divElementContenuParametre.classList.add("cart__item__content__settings");
-        divElementContenuParametre.appendChild(divElementContenuParametreQuantite);
-        divElementContenuParametre.appendChild(divElementContenuParametreSupprimer);
-
-        /////////
-        const divElementImage = document.createElement("div");
-        divElementImage.classList.add("cart__item__img");
-        divElementImage.appendChild(imageElement);
-
-        const divElementContenu = document.createElement("div");
-        divElementContenu.classList.add("cart__item__content");
-        divElementContenu.appendChild(divElementContenuDescription);
-        divElementContenu.appendChild(divElementContenuParametre);
-
-        ////////
-        const article = document.createElement("article");
-        article.classList.add("cart__item");
-        article.setAttribute("data-id", card[i].id);
-        article.setAttribute("data-color", card[i].couleur);
-        article.appendChild(divElementImage);
-        article.appendChild(divElementContenu);
-
-        ////////
-        const section = document.getElementById("cart__items");
-        section.appendChild(article);
-
-        ///////
-        const total_quantite = document.getElementById("totalQuantity");
-        quantiteTotal = quantiteTotal + parseInt(card[i].quantite);
-        total_quantite.innerText = quantiteTotal;
-
-        const total_prix = document.getElementById("totalPrice");
-        prixTotal = prixTotal + produit.price * card[i].quantite;
-        total_prix.innerText = prixTotal;
+        }
+        else{
+          alert("Merci de sélectionner une quantité comprise entre 1 et 100");
+        }
       });
+
+      const deleteElement = document.createElement("p");
+      deleteElement.innerText = "Supprimer";
+      deleteElement.classList.add("deleteItem");
+      deleteElement.addEventListener('click', function (event) {
+        confirmation = confirm("Êtes-vous sur de vouloir supprimer cet article ?");
+
+        if (confirmation == true){
+          differenceArticle = parseInt(card[i].quantite);
+          differencePrix = differenceArticle * produit.price;
+          let eltASupprimmer = event.target.closest('.cart__item');
+          let cartItems = eltASupprimmer.closest('#cart__items');
+
+          cartItems.removeChild(eltASupprimmer);
+          let elementQuonSupprime = card.splice(i, 1);
+
+          if (card.length === 0) {
+            localStorage.removeItem('card');
+          } else {
+            localStorage.removeItem('card');
+
+            let objLineaNew = JSON.stringify(card);
+            localStorage.setItem('card', objLineaNew);
+          }
+          prixTotal = prixTotal - differencePrix;
+          total_prix.innerText = prixTotal;
+
+          quantiteTotal = quantiteTotal - differenceArticle;
+          total_quantite.innerText = quantiteTotal;
+        }
+
+      });
+
+      ////////
+      const divElementContenuParametreQuantite = document.createElement("div");
+      divElementContenuParametreQuantite.classList.add("cart__item__content__settings__quantity");
+      divElementContenuParametreQuantite.appendChild(quantiteElement);
+      divElementContenuParametreQuantite.appendChild(inputQuantity);
+
+      const divElementContenuParametreSupprimer = document.createElement("div");
+      divElementContenuParametreSupprimer.classList.add("cart__item__content__settings__delete");
+      divElementContenuParametreSupprimer.appendChild(deleteElement);
+
+      /////////
+      const divElementContenuDescription = document.createElement("div");
+      divElementContenuDescription.classList.add("cart__item__content__description");
+      divElementContenuDescription.appendChild(nomElement);
+      divElementContenuDescription.appendChild(couleurElement);
+      divElementContenuDescription.appendChild(prixElement);
+
+      const divElementContenuParametre = document.createElement("div");
+      divElementContenuParametre.classList.add("cart__item__content__settings");
+      divElementContenuParametre.appendChild(divElementContenuParametreQuantite);
+      divElementContenuParametre.appendChild(divElementContenuParametreSupprimer);
+
+      /////////
+      const divElementImage = document.createElement("div");
+      divElementImage.classList.add("cart__item__img");
+      divElementImage.appendChild(imageElement);
+
+      const divElementContenu = document.createElement("div");
+      divElementContenu.classList.add("cart__item__content");
+      divElementContenu.appendChild(divElementContenuDescription);
+      divElementContenu.appendChild(divElementContenuParametre);
+
+      ////////
+      const article = document.createElement("article");
+      article.classList.add("cart__item");
+      article.setAttribute("data-id", card[i].id);
+      article.setAttribute("data-color", card[i].couleur);
+      article.appendChild(divElementImage);
+      article.appendChild(divElementContenu);
+
+      ////////
+      const section = document.getElementById("cart__items");
+      section.appendChild(article);
+
+      ///////
+      const total_quantite = document.getElementById("totalQuantity");
+      quantiteTotal = quantiteTotal + parseInt(card[i].quantite);
+      total_quantite.innerText = quantiteTotal;
+
+      const total_prix = document.getElementById("totalPrice");
+      prixTotal = prixTotal + produit.price * card[i].quantite;
+      total_prix.innerText = prixTotal;
+    });
   };
 }
 
@@ -170,20 +169,6 @@ const masque3 = /[@]/;   // il doit y avoir un @
 const masque4 = /[.]/;   // il doit y avoir un point
 const masque5 = /[a-zA-ZÀ-ÿ0-9-_]/;    // il doit y avoir une lettre ou un chiffre
 
-//let firstName="";
-//let lastName="";
-//let adress="";
-//let city="";
-//let mail="";
-
-/*let commande = {
-  firstName : firstName,
-  name : lastName,
-  adress : adress,
-  city : city,
-  email : mail
-};*/
-
 let contact = {
   firstName : "",
   lastName : "",
@@ -194,117 +179,92 @@ let contact = {
 
 
 selectFirstName.addEventListener('change', function (event) {
-    //contact.firstName = event.target.value;
-    //let caseFirstNameRemplie = 0;
-    if (masque1.test(event.target.value)){
-      const firstNameError = document.querySelector('#firstNameErrorMsg');
-      firstNameError.innerText = "Veuillez écrire votre Prénom (chiffres et caractères spéciaux interdits)";
-      contact.firstName = "";
-
-    }
-    else{
-      const firstNameError = document.querySelector('#firstNameErrorMsg');
-      firstNameError.innerText = "";
-      contact.firstName = event.target.value;
-      //caseFirstNameRemplie = 1;
-    }
-
+  if (masque1.test(event.target.value)){
+    const firstNameError = document.querySelector('#firstNameErrorMsg');
+    firstNameError.innerText = "Veuillez écrire votre Prénom (chiffres et caractères spéciaux interdits)";
+    contact.firstName = "";
+  }
+  else{
+    const firstNameError = document.querySelector('#firstNameErrorMsg');
+    firstNameError.innerText = "";
+    contact.firstName = event.target.value;
+  }
 });
 
 
 selectLastName.addEventListener('change', function (event) {
-    //contact.lastName = event.target.value;
-    //let caseLastNameRemplie = 0;
-    if (masque1.test(event.target.value)){
-      const lastNameError = document.querySelector('#lastNameErrorMsg');
-      lastNameError.innerText = "Veuillez écrire votre Nom (chiffres et caractères spéciaux interdits)";
-      contact.lastName = "";
-
-    }
-    else{
-      const lastNameError = document.querySelector('#lastNameErrorMsg');
-      lastNameError.innerText = "";
-      contact.lastName = event.target.value;
-      //caseLastNameRemplie = 1;
-    }
-
+  if (masque1.test(event.target.value)){
+    const lastNameError = document.querySelector('#lastNameErrorMsg');
+    lastNameError.innerText = "Veuillez écrire votre Nom (chiffres et caractères spéciaux interdits)";
+    contact.lastName = "";
+  }
+  else{
+    const lastNameError = document.querySelector('#lastNameErrorMsg');
+    lastNameError.innerText = "";
+    contact.lastName = event.target.value;
+  }
 });
 
 selectAdress.addEventListener('change', function (event) {
-    //contact.address = event.target.value;
-    //let caseAdressRemplie = 0;
-    if (masque2.test(event.target.value)){
-      const adressError = document.querySelector('#addressErrorMsg');
-      adressError.innerText = "Veuillez écrire votre adresse (caractère spéciaux interdits)";
-      contact.address = "";
-
-    }
-    else{
-      const adressError = document.querySelector('#addressErrorMsg');
-      adressError.innerText = "";
-      contact.address = event.target.value;
-      //caseAdressRemplie = 1;
-    }
-
+  if (masque2.test(event.target.value)){
+    const adressError = document.querySelector('#addressErrorMsg');
+    adressError.innerText = "Veuillez écrire votre adresse (caractère spéciaux interdits)";
+    contact.address = "";
+  }
+  else{
+    const adressError = document.querySelector('#addressErrorMsg');
+    adressError.innerText = "";
+    contact.address = event.target.value;
+  }
 });
 
 
 selectCity.addEventListener('change', function (event) {
-    //contact.city = event.target.value;
-    //let caseCityRemplie = 0;
-    if (masque1.test(event.target.value)){
-      const cityError = document.querySelector('#cityErrorMsg');
-      cityError.innerText = "Veuillez indiquer votre ville (chiffres et caractères spéciaux interdits)";
-      contact.city = "";
-
-    }
-    else{
-      const cityError = document.querySelector('#cityErrorMsg');
-      cityError.innerText = "";
-      contact.city = event.target.value;
-      //caseCityRemplie = 1;
-    }
-
+  if (masque1.test(event.target.value)){
+    const cityError = document.querySelector('#cityErrorMsg');
+    cityError.innerText = "Veuillez indiquer votre ville (chiffres et caractères spéciaux interdits)";
+    contact.city = "";
+  }
+  else{
+    const cityError = document.querySelector('#cityErrorMsg');
+    cityError.innerText = "";
+    contact.city = event.target.value;
+  }
 });
 
 
 selectEmail.addEventListener('change', function (event) {
-    //contact.email = event.target.value;
-    //let caseMailRemplie = 0;
-    if (masque3.test(event.target.value) && masque4.test(event.target.value) && masque5.test(event.target.value)){
-      const mailError = document.querySelector('#emailErrorMsg');
-      mailError.innerText = "";
-      contact.email = event.target.value;
-      //caseMailRemplie = 1;
-    }
-    else{
-      const mailError = document.querySelector('#emailErrorMsg');
-      mailError.innerText = "Veuillez indiquer une adresse mail valide";
-      contact.email = "";
-    }
-
+  if (masque3.test(event.target.value) && masque4.test(event.target.value) && masque5.test(event.target.value)){
+    const mailError = document.querySelector('#emailErrorMsg');
+    mailError.innerText = "";
+    contact.email = event.target.value;
+  }
+  else{
+    const mailError = document.querySelector('#emailErrorMsg');
+    mailError.innerText = "Veuillez indiquer une adresse mail valide";
+    contact.email = "";
+  }
 });
 
 
 ////Recuperer le numero de commande
 
 document.querySelector('#order').addEventListener('click', function(event){
-    event.preventDefault();
-    const myHeaders = new Headers();
-    myHeaders.append('Content-Type', 'application/json')
-    if (contact.firstName!='' && contact.lastName!='' && contact.address!='' && contact.city!='' && contact.email!='' && card!=null && card.length!=0){
-      const products = card.map((product) => product.id);
-      var myInit = {
-          method: 'POST',
-          headers: myHeaders,
-          body: JSON.stringify({contact, products})
-      };
-      fetch('http://localhost:3000/api/products/order', myInit ).then((response) => response.json()).then(data => {
-          window.location.replace("./confirmation.html?id=" + data.orderId);
-      })
-    }
-    else{
-      window.alert("Veillez à ce que le panier ne soit pas vide et à remplir le formulaire entièrement !");
-    }
-
+  event.preventDefault();
+  const myHeaders = new Headers();
+  myHeaders.append('Content-Type', 'application/json')
+  if (contact.firstName!='' && contact.lastName!='' && contact.address!='' && contact.city!='' && contact.email!='' && card!=null && card.length!=0){
+    const products = card.map((product) => product.id);
+    var myInit = {
+        method: 'POST',
+        headers: myHeaders,
+        body: JSON.stringify({contact, products})
+    };
+    fetch('http://localhost:3000/api/products/order', myInit ).then((response) => response.json()).then(data => {
+      window.location.replace("./confirmation.html?id=" + data.orderId);
+    })
+  }
+  else{
+    window.alert("Veillez à ce que le panier ne soit pas vide et à remplir le formulaire entièrement !");
+  }
 })
